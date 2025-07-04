@@ -1,6 +1,7 @@
 import mysql.connector as mysql
 import os
 from dotenv import load_dotenv
+from tabulate import tabulate
 
 load_dotenv()
 
@@ -69,8 +70,12 @@ def viewAllEmp():
     cursor.execute("SELECT * FROM employee")
     rows = cursor.fetchall()
     conn.close()
-    for row in rows:
-        print(f"eid: {row[0]}, eName: {row[1]}, eEmail: {row[2]}, eSalary: {row[3]}, eAddress: {row[4]}")
+
+    # Define column headers
+    headers = ["EID", "Employee Name", "Email", "Salary", "Address"]
+
+    # Print table using tabulate
+    print(tabulate(rows, headers=headers, tablefmt="grid"))
 
 def viewEmpByID(eid):
     conn = dbConnection()
