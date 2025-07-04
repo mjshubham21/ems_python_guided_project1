@@ -5,13 +5,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DB_PASSWORD = os.getenv("DB_PASSWORD") # Get password from .env
-
+DB_NAME = os.getenv("DB_NAME")
 def dbConnection():
     return mysql.connect(
         host = "localhost",
         user = "root",
         password = DB_PASSWORD,
-        database = "ems_python"
+        database = DB_NAME
     )
 
 while True:
@@ -21,8 +21,9 @@ while True:
     print("2. Login")
     print("3. Create Employee")
     print("4. View All Employees")
-    print("5. Update Employee")
-    print("5. Delete Employee")
+    print("5. View Employee based on ID")
+    print("6. Update Employee")
+    print("7. Delete Employee")
     print("------------------")
 
     choice = int(input("Enter your choice:"))
@@ -50,7 +51,10 @@ while True:
                 return "Registration successful"
             else:
                 return "Registration failed"
-        print(signup(userName= "mjshubham21", email= "123@456.com", password= "12345678"))
+        userName = input("Enter user name:")
+        email = input("Enter email:")
+        password = input("Enter password:")
+        print(signup(userName, email, password))
 
     elif choice == 2:
     # Login
@@ -64,7 +68,9 @@ while True:
                 return "Login failed"
             
 
-        print(login(userName= "mjshubham21", password= "12345678"))
+        userName = input("Enter user name:")
+        password = input("Enter password:")
+        print(signup(userName, password))
 
     elif choice == 3:
         # Create Employee function:
@@ -98,9 +104,23 @@ while True:
             for row in rows:
                 print(f"eid: {row[0]}, eName: {row[1]}, eEmail: {row[2]}, eSalary: {row[3]}, eAddress: {row[4]}")
             conn.close()
-        print(viewAllEmp())
+        viewAllEmp()
 
-    if choice == 5:
+    elif choice == 5:
+        # View individual employee based on ID:
+        def viewEmpByID(eid):
+            conn = dbConnection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM employee where eid = %s", (eid,))
+            # conn.commit()
+            for el in cursor.fetchall():
+                # print(el)
+                print(f"eid: {el[0]}, eName: {el[1]}, eEmail: {el[2]}, eSalary: {el[3]}, eAddress: {el[4]}")
+            conn.close()
+        viewId = int(input("Enter the ID of employee you wanna see: "))
+        viewEmpByID(viewId)
+
+    elif choice == 6:
         # Update employee function:
         def updateEmp(eid, eName, eEmail, eSalary, eAddress):
             conn = dbConnection()
@@ -123,7 +143,7 @@ while True:
         eAddress = input("Enter New Employee Address: ")
         print(updateEmp(eid, eName, eEmail, eSalary, eAddress))
 
-    elif choice == 6:
+    elif choice == 7:
         # Delete employee based in eid function:
         def deleteEmp(eid):
             conn = dbConnection()
@@ -139,7 +159,8 @@ while True:
         print("Delete Employee:")
         eid = int(input("Enter Employee ID to delete: "))
         print(deleteEmp(eid))
-    
+    else:
+        print("Enter a valid option.")
     cont = input("Do you wanna perform more operations again? (Y/N):")
     print("---------------------------")
     if cont.lower() !=  'y':
